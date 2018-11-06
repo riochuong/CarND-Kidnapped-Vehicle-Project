@@ -65,7 +65,7 @@ void ParticleFilter::prediction(double delta_t, double std_pos[], double velocit
         double y_updated = particles[i].y;
         double theta_updated = particles[i].theta;
 
-        if (yaw_rate < fabs(0.001)) {
+        if (yaw_rate == 0) {
            // yaw rate is zero
            x_updated += velocity * delta_t * cos(particles[i].theta);
            y_updated += velocity * delta_t * sin(particles[i].theta);
@@ -79,7 +79,7 @@ void ParticleFilter::prediction(double delta_t, double std_pos[], double velocit
            theta_updated += yaw_rate * delta_t;
         }
       
-        theta_updated = constrainRadian(theta_updated);        
+    //    theta_updated = constrainRadian(theta_updated);        
         normal_distribution<double> dist_x(x_updated, std_pos[0]);
         normal_distribution<double> dist_y(y_updated, std_pos[1]);
         normal_distribution<double> dist_theta(theta_updated, std_pos[2]);
@@ -108,13 +108,12 @@ void ParticleFilter::dataAssociation(std::vector<LandmarkObs> predicted, std::ve
             }
        }
        observations[i].id = min_id;
-       std::cout << "Obsrv IDx: " << min_id << std::endl;
- 
     }
 }
 
 inline double prob_weight(double x, double y, double mu_x, double mu_y, double std_x, double std_y) {
-    return 0.5 * exp((-1) * (pow((x - mu_x), 2) / 2 *(std_x * std_x) + (pow((y - mu_y), 2) / 2 * (std_y * std_y)))) / (2 * M_PI * std_x * std_y);
+    return 0.5 * exp((-1) * ((pow((x - mu_x), 2) / (2 *(std_x * std_x)))
+                    + (pow((y - mu_y), 2) / (2 * (std_y * std_y))))) / (M_PI * std_x * std_y);
 }
 
 void ParticleFilter::updateWeights(double sensor_range, double std_landmark[], 
@@ -146,7 +145,6 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
                 pred_j.x = landmarks[j].x_f;
                 pred_j.y = landmarks[j].y_f;
                 predicted.push_back(pred_j);
-
             }
         }
         // transform observation to particle spaces
