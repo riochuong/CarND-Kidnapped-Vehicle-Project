@@ -45,15 +45,6 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
     this->is_initialized = true;
 }
 
-inline double constrainRadian(double x) {
-    double M_2PI = M_PI * 2;
-    if (x > M_2PI)
-        return fmod(x, M_2PI);
-    else if (x < 0)
-        return fmod(x, M_2PI) + M_2PI;
-    return x;
-}
-
 void ParticleFilter::prediction(double delta_t, double std_pos[], double velocity, double yaw_rate) {
 	// TODO: Add measurements to each particle and add random Gaussian noise.
 	// NOTE: When adding noise you may find std::normal_distribution and std::default_random_engine useful.
